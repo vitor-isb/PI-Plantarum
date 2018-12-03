@@ -5,10 +5,15 @@
  */
 package view;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Estoque;
 import model.EstoqueDAO;
+import services.DB;
 /**
  *
  * @author 1050481723010
@@ -16,14 +21,17 @@ import model.EstoqueDAO;
 public class main extends javax.swing.JFrame {
 
     GerarOrcamento frameorcamento;
+    private String codigo, nomep, nomec, familia, origem, descricao, porte, distancia, tamanhoc, cor, floracao, qtd, preco;
     
     public void updateDetalhes(){//----------------------------------------------------------erro aqui----
-//        Estoque a = getRow();
+        getRow();
 //        System.out.println(a.getNome());
-//        lblNomeCientifico.setText(getRow().getNcientifico());
+        lblNomeCientifico.setText(nomec);
+        lblNomePopular.setText(nomep);
     }
     
-    public void updateTabela(){
+    public void updateTabela(){//aqui
+        limparTabela();//esse não
         EstoqueDAO edao = new EstoqueDAO();
         ArrayList<Estoque> lista = edao.lista();
         DefaultTableModel model = (DefaultTableModel)Tabela.getModel();
@@ -45,25 +53,24 @@ public class main extends javax.swing.JFrame {
         }
     }
     
-    public Estoque getRow(){//-----------------------------------------------------não sei se funciona----
-        Estoque selecao = new Estoque();
+    public void getRow(){//-----------------------------------------------------não sei se funciona----
+        int linha = Tabela.getSelectedRow();
+        DefaultTableModel model = (DefaultTableModel) Tabela.getModel();
         try{
-            selecao.setCod((int) Tabela.getValueAt(Tabela.getSelectedRow(), 0));
-            selecao.setNome(Tabela.getValueAt(Tabela.getSelectedRow(), 1).toString());
-            selecao.setNcientifico(Tabela.getValueAt(Tabela.getSelectedRow(), 2).toString());
-            selecao.setNcientifico(Tabela.getValueAt(Tabela.getSelectedRow(), 3).toString());
-            selecao.setFamilia(Tabela.getValueAt(Tabela.getSelectedRow(), 4).toString());
-            selecao.setOrigem(Tabela.getValueAt(Tabela.getSelectedRow(), 5).toString());
-            selecao.setPorte((float) Tabela.getValueAt(Tabela.getSelectedRow(), 6));
-            selecao.setDisplantio((float)Tabela.getValueAt(Tabela.getSelectedRow(), 7));
-            selecao.setTamcova((float)Tabela.getValueAt(Tabela.getSelectedRow(), 8));
-            selecao.setCor(Tabela.getValueAt(Tabela.getSelectedRow(), 9).toString());
-            selecao.setFloracao(Tabela.getValueAt(Tabela.getSelectedRow(), 10).toString());
-            selecao.setQtd((int) Tabela.getValueAt(Tabela.getSelectedRow(), 11));
-            selecao.setPreco((float) Tabela.getValueAt(Tabela.getSelectedRow(), 12));
-            System.out.println(selecao.getCod());
-        }catch(Exception e){return null;}
-        return selecao;
+            codigo = model.getValueAt(linha, 0).toString();
+            nomep = model.getValueAt(linha, 1).toString();
+            nomec = model.getValueAt(linha, 2).toString();
+            familia = model.getValueAt(linha, 3).toString();
+            origem = model.getValueAt(linha, 4).toString();
+//            descricao = model.getValueAt(linha, 0).toString();
+            porte = model.getValueAt(linha, 5).toString();
+            distancia = model.getValueAt(linha, 6).toString();
+            tamanhoc = model.getValueAt(linha, 7).toString();
+            cor = model.getValueAt(linha, 8).toString();
+            floracao = model.getValueAt(linha, 9).toString();
+            qtd = model.getValueAt(linha, 10).toString();
+            preco = model.getValueAt(linha, 11).toString();
+        }catch(Exception e){}
     }
 
     /**
@@ -86,8 +93,14 @@ public class main extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         btnBuscar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        txp1 = new javax.swing.JTextField();
+        txtCod = new javax.swing.JTextField();
         lbp1 = new javax.swing.JLabel();
+        lblNome = new javax.swing.JLabel();
+        txtNome = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtOrigem = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        txtCor = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         Tabela = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
@@ -116,34 +129,59 @@ public class main extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setText("Pesquisar");
 
-        txp1.setToolTipText("Codigo");
+        txtCod.setToolTipText("Codigo");
 
         lbp1.setText("Codigo");
+
+        lblNome.setText("Nome");
+
+        jLabel5.setText("Origem");
+
+        jLabel6.setText("Cor");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txp1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(lbp1)
-                        .addGap(0, 133, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(59, 59, 59)
-                .addComponent(btnBuscar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(57, 57, 57))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(59, 59, 59)
+                        .addComponent(btnBuscar))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lblNome))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel5))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel6)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtCod, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(lbp1)
+                        .addGap(0, 133, Short.MAX_VALUE))
+                    .addComponent(txtNome, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtOrigem, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(txtCor, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,7 +191,19 @@ public class main extends javax.swing.JFrame {
                 .addGap(11, 11, 11)
                 .addComponent(lbp1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txp1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblNome)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtCor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnBuscar)
                 .addContainerGap())
@@ -217,6 +267,7 @@ public class main extends javax.swing.JFrame {
 
         lblDescricao.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblDescricao.setText("Descricao");
+        lblDescricao.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -245,7 +296,7 @@ public class main extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblNomeCientifico)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblDescricao)
+                .addComponent(lblDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAddOrcamento)
                 .addContainerGap())
@@ -269,9 +320,19 @@ public class main extends javax.swing.JFrame {
         jMenu4.setText("Flora");
 
         mniEstoque.setText("Editar estoque");
+        mniEstoque.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniEstoqueActionPerformed(evt);
+            }
+        });
         jMenu4.add(mniEstoque);
 
         mniOrcamentos.setText("Orcamentos");
+        mniOrcamentos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniOrcamentosActionPerformed(evt);
+            }
+        });
         jMenu4.add(mniOrcamentos);
 
         mniVendas.setText("Vendas");
@@ -324,23 +385,26 @@ public class main extends javax.swing.JFrame {
 
     private void mniVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniVendasActionPerformed
         // TODO add your handling code here:
-        
+        new FrameVenda().setVisible(true);
     }//GEN-LAST:event_mniVendasActionPerformed
 
     private void mniVendedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniVendedorActionPerformed
         // TODO add your handling code here:
         new FrameVendedor().setVisible(true);
         
-        
     }//GEN-LAST:event_mniVendedorActionPerformed
 
     private void btnAddOrcamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddOrcamentoActionPerformed
         // TODO add your handling code here:
-        if(frameorcamento==null){
-            frameorcamento = new GerarOrcamento();
-            frameorcamento.setVisible(true);
-            frameorcamento.addProduto((int) Tabela.getValueAt(Tabela.getSelectedRow(), 0));
+        try{
+            if(frameorcamento==null){
+                frameorcamento = new GerarOrcamento();//colocar código no parentese----
+                frameorcamento.setVisible(true);
+            }
+            frameorcamento.addProduto(Integer.parseInt(codigo), nomep, Float.parseFloat(preco),1);
             
+        }catch(Exception e){
+            System.out.println(e.toString());
         }
     }//GEN-LAST:event_btnAddOrcamentoActionPerformed
 
@@ -351,7 +415,67 @@ public class main extends javax.swing.JFrame {
             btnAddOrcamento.setEnabled(true);
         }
         updateDetalhes();
+        
     }//GEN-LAST:event_TabelaMouseClicked
+
+    private void mniEstoqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniEstoqueActionPerformed
+        // TODO add your handling code here:
+         new EditarEstoque().setVisible(true);       
+    }//GEN-LAST:event_mniEstoqueActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        // TODO add your handling code here:
+        if(txtCod.getText().isEmpty()
+                && txtNome.getText().isEmpty()
+                && txtOrigem.getText().isEmpty()
+                && txtCor.getText().isEmpty()){
+            updateTabela();//esse é útil
+        }
+        else{
+            limparTabela();
+            String sql = "SELECT [cod_planta], [nome_planta], [ncientifico_planta], "
+                    + "[familia_planta], [origem_planta], "
+                    + "[porte_planta], [displantio_planta], [tamcova_planta], "
+                    + "[cor_planta], [floracao_planta], [qtdestoque_planta], "
+                    + "[preco_planta] FROM [dbo].[estoque] "
+                    + "WHERE ";
+            sql += "[cod_planta] like '%"+txtCod.getText()+"%' and";
+            sql += "[nome_planta] like '%"+txtNome.getText()+"%' and";
+            sql += "[origem_planta] like '%"+txtOrigem.getText()+"%' and";
+            sql += "[cor_planta] like '%"+txtCor.getText()+"%'";
+            DB bd = new DB();
+            bd.getConnection();
+            try{
+                bd.st = bd.con.prepareStatement(sql);
+                bd.rs = bd.st.executeQuery();
+                DefaultTableModel model = (DefaultTableModel) Tabela.getModel();
+                Object[] linha = new Object[12];
+                while(bd.rs.next()){
+                    linha[0]=bd.rs.getInt(1);
+                    linha[1]=bd.rs.getString(2);
+                    linha[2]=bd.rs.getString(3);
+                    linha[3]=bd.rs.getString(4);
+                    linha[4]=bd.rs.getString(5);
+                    linha[5]=bd.rs.getFloat(6);
+                    linha[6]=bd.rs.getFloat(7);
+                    linha[7]=bd.rs.getFloat(8);
+                    linha[8]=bd.rs.getString(9);
+                    linha[9]=bd.rs.getString(10);
+                    linha[10]=bd.rs.getInt(11);
+                    linha[11]=bd.rs.getFloat(12);
+                    model.addRow(linha);
+                }
+            }catch(SQLException e){System.out.println(e.toString());}
+            finally{
+                bd.close();
+            }
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void mniOrcamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOrcamentosActionPerformed
+        // TODO add your handling code here:
+        new FrameOrcamento().setVisible(true);
+    }//GEN-LAST:event_mniOrcamentosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -397,6 +521,8 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
@@ -404,6 +530,7 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblDescricao;
+    private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblNomeCientifico;
     private javax.swing.JLabel lblNomePopular;
     private javax.swing.JLabel lbp1;
@@ -412,6 +539,16 @@ public class main extends javax.swing.JFrame {
     private javax.swing.JMenuItem mniOrcamentos;
     private javax.swing.JMenuItem mniVendas;
     private javax.swing.JMenuItem mniVendedor;
-    private javax.swing.JTextField txp1;
+    private javax.swing.JTextField txtCod;
+    private javax.swing.JTextField txtCor;
+    private javax.swing.JTextField txtNome;
+    private javax.swing.JTextField txtOrigem;
     // End of variables declaration//GEN-END:variables
+
+    private void limparTabela() {
+        DefaultTableModel model = (DefaultTableModel)Tabela.getModel();
+        while(model.getRowCount()>0){
+            model.removeRow(0);
+        }
+    }
 }

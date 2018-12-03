@@ -8,7 +8,23 @@ public class Estoque {
 	public Estoque() {
 		
 	}
-	
+        
+	public Estoque(String nome, String ncientifico, String familia, String origem, String descricao,
+			float porte, float displantio, float tamcova, String cor, String floracao, int qtd, float preco) {
+		this.qtd = qtd;
+		this.nome = nome;
+		this.ncientifico = ncientifico;
+		this.familia = familia;
+		this.origem = origem;
+		this.descricao = descricao;
+		this.cor = cor;
+		this.floracao = floracao;
+		this.porte = porte;
+		this.displantio = displantio;
+		this.tamcova = tamcova;
+		this.preco = preco;
+	}
+        
 	public Estoque(int cod, String nome, String ncientifico, String familia, String origem, String descricao,
 			float porte, float displantio, float tamcova, String cor, String floracao, int qtd, float preco) {
 		this.cod = cod;

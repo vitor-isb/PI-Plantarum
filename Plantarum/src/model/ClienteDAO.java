@@ -38,7 +38,7 @@ public class ClienteDAO implements DAO{
         
 	/**
 	 * Grava o cadastro de um Cliente.
-	 * @param p - o Cliente a ser salvo.
+	 * @param c - o Cliente a ser salvo.
 	 * @return String - mensagem de sucesso ou falha.
 	 */
 	public String salvar(Cliente c) {

@@ -5,10 +5,14 @@
  */
 package view;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import model.Vendedor;
 import model.VendedorDAO;
+import services.DB;
 /**
  *
  * @author Dario
@@ -17,7 +21,7 @@ public class FrameVendedor extends javax.swing.JFrame {
 
     public Vendedor ret;
     public boolean pronto;
-    
+    private int linha=1;
     
     
     /**
@@ -28,21 +32,47 @@ public class FrameVendedor extends javax.swing.JFrame {
         updateTabela();
     }
     
+    public void limparTabela(){
+        DefaultTableModel model = (DefaultTableModel)Tabela.getModel();
+        while(model.getRowCount()>0){
+            model.removeRow(0);
+        }
+    }
+    
+    /**
+     * função que coleta os dados de uma linha que foi selecionada na tabela
+     * @return retorna o tipo vendedor
+     */
+    private Vendedor getRow(){
+        DefaultTableModel model = (DefaultTableModel) Tabela.getModel();
+        int i = Tabela.getSelectedRow();
+        Vendedor selecao = new Vendedor(
+                (int) model.getValueAt(i, 0),
+                model.getValueAt(i, 1).toString(),
+                model.getValueAt(i, 2).toString(),
+                (float) model.getValueAt(i, 3),"",
+                model.getValueAt(i, 4).toString(),
+                model.getValueAt(i, 5).toString(),
+                model.getValueAt(i, 6).toString()
+        );
+        return selecao;
+    }
+    
     public void updateTabela(){
+        limparTabela();
+        DefaultTableModel model = (DefaultTableModel) Tabela.getModel();
         VendedorDAO vdao = new VendedorDAO();
         ArrayList<Vendedor> lista = vdao.lista();
-        DefaultTableModel model = (DefaultTableModel)Tabela.getModel();
-        Object[] linha = new Object[8];
+        Object[] index = new Object[8];
         for(int i = 0; i<lista.size();i++){
-            linha[0]=lista.get(i).getCod();
-            linha[1]=lista.get(i).getNome();
-            linha[2]=lista.get(i).getCpf();
-            linha[3]=lista.get(i).getSalario();
-            linha[4]=lista.get(i).getSenha();
-            linha[5]=lista.get(i).getEmail();
-            linha[6]=lista.get(i).getEndereco();
-            linha[7]=lista.get(i).getCidade();
-            model.addRow(linha);
+            index[0]=lista.get(i).getCod();
+            index[1]=lista.get(i).getNome();
+            index[2]=lista.get(i).getCpf();
+            index[3]=lista.get(i).getSalario();
+            index[4]=lista.get(i).getEmail();
+            index[5]=lista.get(i).getEndereco();
+            index[6]=lista.get(i).getCidade();
+            model.addRow(index);
         }
     }
     
@@ -60,12 +90,8 @@ public class FrameVendedor extends javax.swing.JFrame {
         btnAdd = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        txtCod = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtNome = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        txtCPF = new javax.swing.JTextField();
         btnProcurar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -75,39 +101,49 @@ public class FrameVendedor extends javax.swing.JFrame {
 
             },
             new String [] {
-                "codigo", "nome", "cpf", "salario", "senha", "email", "Endereco", "Cidade"
+                "codigo", "nome", "cpf", "salario", "email", "Endereco", "Cidade"
             }
         ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Float.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        Tabela.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TabelaMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(Tabela);
 
         btnAdd.setText("Adicionar");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
         btnExcluir.setText("Excluir");
+        btnExcluir.setEnabled(false);
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jLabel1.setText("Codigo");
-
         jLabel2.setText("Nome");
 
-        jLabel3.setText("CPF");
-
         btnProcurar.setText("Procurar");
+        btnProcurar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProcurarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -116,15 +152,10 @@ public class FrameVendedor extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtCod)
                     .addComponent(txtNome)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtCPF))
+                        .addComponent(jLabel2)
+                        .addGap(0, 119, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(45, 45, 45)
@@ -134,19 +165,10 @@ public class FrameVendedor extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(131, 131, 131)
                 .addComponent(btnProcurar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -159,15 +181,16 @@ public class FrameVendedor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -189,6 +212,77 @@ public class FrameVendedor extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        // TODO add your handling code here:
+        new TelaCadastro().setVisible(true);
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void TabelaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelaMouseClicked
+        // TODO add your handling code here:
+        if(!btnExcluir.isEnabled())
+            btnExcluir.setEnabled(true);
+        else
+            btnExcluir.setEnabled(false);
+        linha = Tabela.getSelectedRow();
+    }//GEN-LAST:event_TabelaMouseClicked
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        // TODO add your handling code here:
+        DB bd = new DB();
+        bd.getConnection();
+        String sql = "delete from vendedor where cod_vendedor=?";
+        try{
+            bd.st = bd.con.prepareStatement(sql);
+            bd.st.setInt(1, (int) Tabela.getValueAt(linha, 0));
+            bd.st.executeUpdate();
+            updateTabela();
+            btnExcluir.setEnabled(false);
+        } catch (SQLException ex) {
+            Logger.getLogger(FrameVendedor.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            bd.close();
+        }
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void btnProcurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcurarActionPerformed
+        // TODO add your handling code here:
+        
+        if(txtNome.getText().isEmpty()){
+            updateTabela();
+        }
+        else{
+            limparTabela();
+            String sql = "SELECT [cod_vendedor], [nome_vendedor], [cpf_vendedor], "
+                    + "[sal_vendedor], [senha_vendedor], [email_vendedor], "
+                    + "[endereco_vendedor], [cidade_vendedor] FROM [dbo].[vendedor] "
+                    + "WHERE [nome_vendedor] like '"+txtNome.getText()+"%'";
+            
+            DB bd = new DB();
+            bd.getConnection();
+            try{
+                System.out.println(sql);
+                bd.st = bd.con.prepareStatement(sql);
+                bd.rs = bd.st.executeQuery();
+//                --------------------------------------------------------parei aqui---------------------
+                DefaultTableModel model = (DefaultTableModel) Tabela.getModel();
+                Object[] i = new Object[8];
+                while(bd.rs.next()){
+                    i[0]=bd.rs.getInt(1);
+                    i[1]=bd.rs.getString(2);
+                    i[2]=bd.rs.getString(3);
+                    i[3]=bd.rs.getFloat(4);
+                    i[4]=bd.rs.getString(5);
+                    i[5]=bd.rs.getString(6);
+                    i[6]=bd.rs.getString(7);
+                    model.addRow(i);
+                }
+            }catch(SQLException e){System.out.println(e.toString());}
+            finally{
+                bd.close();
+            }
+        }
+    }//GEN-LAST:event_btnProcurarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -230,33 +324,10 @@ public class FrameVendedor extends javax.swing.JFrame {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnProcurar;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField txtCPF;
-    private javax.swing.JTextField txtCod;
     private javax.swing.JTextField txtNome;
     // End of variables declaration//GEN-END:variables
 
-    /**
-     * função que coleta os dados de uma linha que foi selecionada na tabela
-     * @return retorna o tipo vendedor
-     */
-    private Vendedor getRow(){
-        DefaultTableModel model = (DefaultTableModel) Tabela.getModel();
-        int linha = Tabela.getSelectedRow();
-        Vendedor selecao = new Vendedor(
-                (int) model.getValueAt(linha, 0),
-                model.getValueAt(linha, 1).toString(),
-                model.getValueAt(linha, 2).toString(),
-                (float) model.getValueAt(linha, 3),
-                model.getValueAt(linha, 4).toString(),
-                model.getValueAt(linha, 5).toString(),
-                model.getValueAt(linha, 6).toString(),
-                model.getValueAt(linha, 7).toString()
-        );
-        return selecao;
-    }
 }

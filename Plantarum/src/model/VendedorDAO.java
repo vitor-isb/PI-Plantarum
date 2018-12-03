@@ -17,7 +17,10 @@ public class VendedorDAO implements DAO{
     public VendedorDAO(){
         
     }
-    
+    /**
+     * Esse método retorna uma lista com todos os vendedores dentro do banco de dados
+     * @return lista do tipo vendedor
+     */
     public ArrayList<Vendedor> lista() {
         ArrayList<Vendedor> lista = new ArrayList<>();
         sql = "SELECT [cod_vendedor], [nome_vendedor], [cpf_vendedor], "

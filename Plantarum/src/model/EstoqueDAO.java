@@ -25,23 +25,26 @@ public class EstoqueDAO implements DAO {
 	 * @return String - mensagem de sucesso ou falha.
 	 */
 	public String salvar(Estoque e) {
-		sql = "insert into cliente values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		sql = "INSERT INTO [dbo].[estoque]([nome_planta], [ncientifico_planta], "
+                        + "[familia_planta], [origem_planta], [descricao_planta], "
+                        + "[porte_planta], [displantio_planta], [tamcova_planta], "
+                        + "[cor_planta], [floracao_planta], [qtdestoque_planta], [preco_planta])\n" +
+                        "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			bd.getConnection();
 			bd.st = bd.con.prepareStatement(sql);
-			bd.st.setInt(1, e.getCod());
-			bd.st.setString(2, e.getNome());
-			bd.st.setString(3, e.getNcientifico());
-			bd.st.setString(4, e.getFamilia());
-			bd.st.setString(5, e.getOrigem());
-			bd.st.setString(6, e.getDescricao());
-			bd.st.setDouble(7, e.getPorte());
-			bd.st.setDouble(8, e.getDisplantio());
-			bd.st.setDouble(9, e.getTamcova());
-			bd.st.setString(10, e.getCor());
-			bd.st.setString(11, e.getFloracao());
-			bd.st.setInt(12, e.getQtd());
-			bd.st.setDouble(13, e.getPreco());
+			bd.st.setString(1, e.getNome());
+			bd.st.setString(2, e.getNcientifico());
+			bd.st.setString(3, e.getFamilia());
+			bd.st.setString(4, e.getOrigem());
+			bd.st.setString(5, e.getDescricao());
+			bd.st.setDouble(6, e.getPorte());
+			bd.st.setDouble(7, e.getDisplantio());
+			bd.st.setDouble(8, e.getTamcova());
+			bd.st.setString(9, e.getCor());
+			bd.st.setString(10, e.getFloracao());
+			bd.st.setInt(11, e.getQtd());
+			bd.st.setDouble(12, e.getPreco());
 			bd.st.executeUpdate();
 			ret = "Sucesso na inclusão";
 		} catch (SQLException erro) {

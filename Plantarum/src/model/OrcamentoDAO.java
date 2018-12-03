@@ -15,8 +15,8 @@ public class OrcamentoDAO implements DAO{
 	
     public ArrayList<Orcamento> lista(boolean venda) {
         ArrayList<Orcamento> lista = new ArrayList<>();
-        sql = "SELECT [cod_orcamento], [data_orcamento], [num_pedido], "
-                + "[fk_vendedor], [fk_cliente], [venda] FROM [dbo].[orcamento]";
+        sql = "SELECT [cod_orcamento], [data_orcamento], [fk_vendedor], [fk_cliente], "
+                + "[venda] FROM [dbo].[orcamento]";
         if(venda)
             sql+=" where venda = 1";
         else
@@ -28,8 +28,8 @@ public class OrcamentoDAO implements DAO{
             bd.rs = bd.st.executeQuery();
             Orcamento o;
             while (bd.rs.next()) {
-                o = new Orcamento(bd.rs.getInt(1), bd.rs.getString(2), bd.rs.getInt(3),
-                        bd.rs.getInt(4), bd.rs.getInt(5), bd.rs.getBoolean(6));
+                o = new Orcamento(bd.rs.getInt(1), bd.rs.getString(2),
+                        bd.rs.getInt(3), bd.rs.getInt(4), venda);
                 lista.add(o);
             }
             return lista;
@@ -47,15 +47,14 @@ public class OrcamentoDAO implements DAO{
 	 * @return String - mensagem de retorno
 	 */
     public String salvar(Orcamento o) {
-	sql = "insert into orcamento values (?,?,?,?,?)";
+	sql = "insert into orcamento values (?,?,?,?)";
 	try {
             bd.getConnection();
             bd.st = bd.con.prepareStatement(sql);
             bd.st.setInt(1, o.getCod());
             bd.st.setString(2, o.getData());
-            bd.st.setInt(3, o.getNumpedido());
-            bd.st.setInt(4, o.ven.getCod());
-            bd.st.setInt(5, o.cli.getCod());
+            bd.st.setInt(3, o.getVen());
+            bd.st.setInt(4, o.getCli());
             bd.st.executeUpdate();
             ret = "Sucesso na inclusão";
 	} catch (SQLException erro) {
@@ -72,14 +71,13 @@ public class OrcamentoDAO implements DAO{
 	 * @return String - Sucesso ou mensagem de erro
 	 */
 	public String update(Orcamento o) {
-		sql = "update orcamento set data_orcamento=?, num_pedido=?, fk_vendedor=?, fk_cliente=? where cod_orcamento=?";
+		sql = "update orcamento set data_orcamento=?, fk_vendedor=?, fk_cliente=? where cod_orcamento=?";
 		try {
 			bd.st = bd.con.prepareStatement(sql);
 			bd.st.setString(1, o.getData());
-			bd.st.setInt(2, o.getNumpedido());
-			bd.st.setInt(3, o.ven.getCod());
-			bd.st.setInt(4, o.cli.getCod());
-			bd.st.setInt(5, o.getCod());
+			bd.st.setInt(2, o.getVen());
+			bd.st.setInt(3, o.getCli());
+			bd.st.setInt(4, o.getCod());
 			bd.st.executeUpdate();
 			ret = "Sucesso na alteração";
 		} catch (SQLException e) {
@@ -106,9 +104,8 @@ public class OrcamentoDAO implements DAO{
 			if (bd.rs.next()) { // copia bd-->objeto
 				o.setCod(bd.rs.getInt(1));
 				o.setData(bd.rs.getString(2));
-				o.setNumpedido(bd.rs.getInt(3));
-				o.ven.setCod(bd.rs.getInt(4));
-				o.cli.setCod(bd.rs.getInt(5));
+				o.setVen(bd.rs.getInt(3));
+				o.setCli(bd.rs.getInt(4));
 				return o;
 			} else {
 				return null;
@@ -128,7 +125,7 @@ public class OrcamentoDAO implements DAO{
 			bd.st = bd.con.prepareStatement(sql);
 			bd.rs = bd.st.executeQuery();
 			while (bd.rs.next()) {
-				System.out.println("[" + bd.rs.getInt(1) + ", " + bd.rs.getString(2) + ", " + bd.rs.getInt(3) + ", " + bd.rs.getInt(4)+ ", "
+				System.out.println("[" + bd.rs.getInt(1) + ", " + bd.rs.getString(2) + ", " + bd.rs.getInt(4)+ ", "
 						+ bd.rs.getInt(5) + "]");
 			}
 		} catch (SQLException erro) {

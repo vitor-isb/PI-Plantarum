@@ -1,26 +1,24 @@
 package model;
 
 public class Orcamento {
-	private int cod, numpedido;
+	private int cod;
 	private String data;
-	public Vendedor ven;
-	public Cliente cli;
+	public int ven;
+	public int cli;
         private boolean venda;
 	
-	public Orcamento(int cod, String data, int numpedido, int ven, int cli, boolean venda) {
+	public Orcamento(int cod, String data, int ven, int cli, boolean venda) {
 		this.cod = cod;
-		this.numpedido = numpedido;
 		this.data = data;
-		this.ven.setCod(ven);
-                this.cli.setCod(cli);
+		this.ven = ven;
+                this.cli = cli;
 	}
         
-        public Orcamento(int numpedido, String data, int ven, int cli, boolean venda) {
+        public Orcamento(String data, int ven, int cli, boolean venda) {
 //		this.cod = cod;
-		this.numpedido = numpedido;
 		this.data = data;
-		this.ven.setCod(ven);
-                this.cli.setCod(cli);
+		this.ven = ven;
+                this.cli = cli;
 	}
 
 	public Orcamento() {}
@@ -33,14 +31,6 @@ public class Orcamento {
 		this.cod = cod;
 	}
         
-	public int getNumpedido() {
-		return numpedido;
-	}
-        
-	public void setNumpedido(int numpedido) {
-		this.numpedido = numpedido;
-	}
-        
 	public String getData() {
 		return data;
 	}
@@ -48,19 +38,19 @@ public class Orcamento {
 		this.data = data;
 	}
         
-	public Vendedor getVen() {
+	public int getVen() {
 		return ven;
 	}
         
-	public void setVen(Vendedor ven) {
+	public void setVen(int ven) {
 		this.ven = ven;
 	}
         
-	public Cliente getCli() {
+	public int getCli() {
 		return cli;
 	}
         
-	public void setCli(Cliente cli) {
+	public void setCli(int cli) {
 		this.cli = cli;
 	}
         

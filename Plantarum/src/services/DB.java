@@ -28,10 +28,11 @@ public class DB {
             return true;
     	}
     	catch(ClassNotFoundException erro) {
+            System.out.println(erro.toString());
             return false;
     	}
     	catch(SQLException erro) {
-            System.out.println(con);
+            System.out.println(erro.toString());
             return false;
     	}
     }

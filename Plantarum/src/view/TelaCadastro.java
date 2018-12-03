@@ -28,9 +28,7 @@ public class TelaCadastro extends javax.swing.JFrame {
     VendedorDAO vdao = new VendedorDAO();
     Vendedor v = new Vendedor();
     DB bd = new DB();
- 
-   
-        
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -61,7 +59,7 @@ public class TelaCadastro extends javax.swing.JFrame {
         txtCPF = new javax.swing.JFormattedTextField();
         txtSalario = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         lblVendedor.setText("Nome do vendedor:");
 
@@ -221,7 +219,7 @@ public class TelaCadastro extends javax.swing.JFrame {
     }//GEN-LAST:event_txtUFActionPerformed
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFecharActionPerformed
-        System.exit(0);
+        this.dispose();
     }//GEN-LAST:event_btnFecharActionPerformed
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
@@ -231,7 +229,6 @@ public class TelaCadastro extends javax.swing.JFrame {
         txtEmail.setText("");
         txtEndereco.setText("");
         txtCidade.setText("");
-        txtUF.setSelectedItem("");
         txtSenha.setText("");
 
         JOptionPane.showMessageDialog(null, "Todos os dados foram limpos!");
@@ -255,7 +252,7 @@ public class TelaCadastro extends javax.swing.JFrame {
             v.setEmail(email);
             v.setEndereco(endereco);
             v.setSenha(senha);
-            v.setCidade(cidade);
+            v.setCidade(cidade+"-"+uf);
             vdao.salvar(v);
             JOptionPane.showMessageDialog(null, "Sucesso no cadastro");
         }catch(Exception e){
@@ -268,7 +265,6 @@ public class TelaCadastro extends javax.swing.JFrame {
         txtEndereco.setText("");
         txtCidade.setText("");
         txtSenha.setText("");
-        txtUF.setSelectedItem("");
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     /**

@@ -151,29 +151,27 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
+        DB bd = new DB();
         try {
-            DB bd = new DB();
             bd.getConnection();
             String sql = "SELECT * FROM vendedor Where nome_vendedor=? AND senha_vendedor=?";
-            PreparedStatement stmt = bd.con.prepareStatement(sql);
-
-            stmt.setString(1, textNome.getText());
-            stmt.setString(2, new String(textSenha.getPassword()));
-
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                JOptionPane.showMessageDialog(null, "Usuário existente!");
+            bd.st = bd.con.prepareStatement(sql);
+            
+            bd.st.setString(1, textNome.getText());
+            bd.st.setString(2, new String(textSenha.getPassword()));
+            
+            bd.rs = bd.st.executeQuery();
+            if (bd.rs.next()) {
+                JOptionPane.showMessageDialog(null, "Usuário existente!\nCod: " + bd.rs.getInt("cod_vendedor"));
+                new main().setVisible(true);
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Usuário não existente!");
             }
-            stmt.close();
-            rs.close();
-            bd.close();
-            new main().setVisible(true);
-            this.dispose();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+        }finally{
+            bd.close();
         }
     }//GEN-LAST:event_btnEntrarActionPerformed
 

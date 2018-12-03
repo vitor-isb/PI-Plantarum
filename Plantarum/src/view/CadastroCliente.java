@@ -5,6 +5,7 @@
  */
 package view;
 
+import java.awt.HeadlessException;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -59,7 +60,7 @@ public class CadastroCliente extends javax.swing.JFrame {
         txtCPF = new javax.swing.JFormattedTextField();
         txtContato = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         lblCliente.setText("Nome do cliente:");
 
@@ -207,7 +208,7 @@ public class CadastroCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_txtUFActionPerformed
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFecharActionPerformed
-        System.exit(0);
+        this.dispose();
     }//GEN-LAST:event_btnFecharActionPerformed
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
@@ -217,7 +218,6 @@ public class CadastroCliente extends javax.swing.JFrame {
         txtEmail.setText("");
         txtEndereco.setText("");
         txtCidade.setText("");
-        txtUF.setSelectedItem("");
 
         JOptionPane.showMessageDialog(null, "Todos os dados foram limpos!");
 
@@ -240,7 +240,7 @@ public class CadastroCliente extends javax.swing.JFrame {
             c.setCidade(cidade);
             cdao.salvar(c);
             JOptionPane.showMessageDialog(null, "Sucesso no cadastro");
-        }catch(Exception e){
+        }catch(HeadlessException e){
             JOptionPane.showMessageDialog(null, e.toString());
         }
         txtNome.setText("");
@@ -249,7 +249,6 @@ public class CadastroCliente extends javax.swing.JFrame {
         txtEmail.setText("");
         txtEndereco.setText("");
         txtCidade.setText("");
-        txtUF.setSelectedItem("");
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     /**

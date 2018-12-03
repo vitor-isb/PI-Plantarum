@@ -5,16 +5,28 @@
  */
 package view;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import model.Cliente;
 import model.ClienteDAO;
+import services.DB;
 
 /**
  *
  * @author Dario
  */
 public class FrameCliente extends javax.swing.JFrame {
+    private int linha=1;
+    
+    public void limparTabela(){
+        DefaultTableModel model = (DefaultTableModel)Tabela.getModel();
+        while(model.getRowCount()>0){
+            model.removeRow(0);
+        }
+    }
     
     /**
      * Creates new form Cliente
@@ -25,10 +37,11 @@ public class FrameCliente extends javax.swing.JFrame {
     }
 
     public void updateTabela(){
+        limparTabela();
         ClienteDAO cdao = new ClienteDAO();
         ArrayList<Cliente> lista = cdao.lista();
         DefaultTableModel model = (DefaultTableModel)Tabela.getModel();
-        Object[] linha = new Object[6];
+        Object[] linha = new Object[7];
         for(int i = 0; i<lista.size();i++){
             linha[0]=lista.get(i).getCod();
             linha[1]=lista.get(i).getNome();
@@ -53,12 +66,8 @@ public class FrameCliente extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         Tabela = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        txtCod = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtNome = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        txtCPF = new javax.swing.JTextField();
         btnProcurar = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
@@ -88,17 +97,23 @@ public class FrameCliente extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        Tabela.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TabelaMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(Tabela);
 
         jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jLabel1.setText("Codigo");
-
         jLabel2.setText("Nome");
 
-        jLabel3.setText("CPF");
-
         btnProcurar.setText("Procurar");
+        btnProcurar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProcurarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -107,15 +122,10 @@ public class FrameCliente extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtCod)
                     .addComponent(txtNome)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtCPF))
+                        .addComponent(jLabel2)
+                        .addGap(0, 119, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(45, 45, 45)
@@ -126,18 +136,10 @@ public class FrameCliente extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(120, 120, 120)
                 .addComponent(btnProcurar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -150,6 +152,12 @@ public class FrameCliente extends javax.swing.JFrame {
         });
 
         btnExcluir.setText("Excluir");
+        btnExcluir.setEnabled(false);
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -161,11 +169,12 @@ public class FrameCliente extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(13, 13, 13)
                         .addComponent(btnAdd)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -191,6 +200,70 @@ public class FrameCliente extends javax.swing.JFrame {
         // TODO add your handling code here:
         new CadastroCliente().setVisible(true);
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        // TODO add your handling code here:
+        DB bd = new DB();
+        bd.getConnection();
+        String sql = "delete from cliente where cod_cliente=?";
+        try{
+            bd.st = bd.con.prepareCall(sql);
+            bd.st.setInt(1, (int) Tabela.getValueAt(linha, 0));
+            bd.st.executeUpdate();
+            updateTabela();
+        } catch (SQLException ex) {
+            Logger.getLogger(FrameCliente.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            bd.close();
+        }
+    }//GEN-LAST:event_btnExcluirActionPerformed
+
+    private void TabelaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelaMouseClicked
+        // TODO add your handling code here:
+        if(!btnExcluir.isEnabled())
+            btnExcluir.setEnabled(true);
+        else
+            btnExcluir.setEnabled(false);
+        linha = Tabela.getSelectedRow();
+    }//GEN-LAST:event_TabelaMouseClicked
+
+    private void btnProcurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcurarActionPerformed
+        // TODO add your handling code here:
+        if(txtNome.getText().isEmpty()){
+            updateTabela();
+        }
+        else{
+            limparTabela();
+            String sql = "SELECT [cod_cliente], [nome_cliente], [cpf_cliente], "
+                    + "[email_cliente], [contato_cliente], [endereco_cliente], "
+                    + "[cidade_cliente] FROM [dbo].[cliente]"
+                    + "WHERE [nome_cliente] like '"+txtNome.getText()+"%'";
+            
+            DB bd = new DB();
+            bd.getConnection();
+            try{
+                System.out.println(sql);
+                bd.st = bd.con.prepareStatement(sql);
+                bd.rs = bd.st.executeQuery();
+//                --------------------------------------------------------parei aqui---------------------
+                DefaultTableModel model = (DefaultTableModel) Tabela.getModel();
+                Object[] i = new Object[8];
+                while(bd.rs.next()){
+                    i[0]=bd.rs.getInt(1);
+                    i[1]=bd.rs.getString(2);
+                    i[2]=bd.rs.getString(3);
+                    i[3]=bd.rs.getString(4);
+                    i[4]=bd.rs.getString(5);
+                    i[5]=bd.rs.getString(6);
+                    i[6]=bd.rs.getString(7);
+                    model.addRow(i);
+                }
+            }catch(SQLException e){System.out.println(e.toString());}
+            finally{
+                bd.close();
+            }
+        }
+    }//GEN-LAST:event_btnProcurarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -233,13 +306,9 @@ public class FrameCliente extends javax.swing.JFrame {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnProcurar;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField txtCPF;
-    private javax.swing.JTextField txtCod;
     private javax.swing.JTextField txtNome;
     // End of variables declaration//GEN-END:variables
 }
